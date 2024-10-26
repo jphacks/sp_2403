@@ -21,8 +21,8 @@ class ManiaeAPI:
         json_data = {}
         for i,route in enumerate(routes):
             stations = []
-            # for station in route.find_all(class_="station"):
-            for station in route.children:
+            for station in route.find_all(class_="station"):
+            # for station in route.children:
                 data = {}
                 data["station"] = station.find("a").text
                 if len(station.find(class_="time")) == 1:
