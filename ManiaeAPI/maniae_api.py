@@ -24,12 +24,12 @@ class ManiaeAPI:
         return soup.find_all(class_="routeDetail")
 
     def make_json_data(self, routes):
-        json_data = {}
+        json_data = {"routes":[]}
         for route_index,route in enumerate(routes):
             stations = self.get_stations(route)
             transports = self.get_transports(route)
             route_name = "route" + str(route_index + 1) # 仮
-            json_data[route_name] = self.merge_data(stations, transports)
+            json_data["routes"].append(self.merge_data(stations, transports))
         return json_data
 
     def make_url(self, start, goal, time):
