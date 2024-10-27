@@ -4,7 +4,7 @@ import { TargetArrivalTimeCandidate } from "../model";
 function useTimeCandidates(targetArrivalTimes: TargetArrivalTimeCandidate[]) {
   const [index, setIndex] = useState(0);
 
-  const selected = targetArrivalTimes[index];
+  const selected = targetArrivalTimes[index] ?? null;
 
   const goToPrevious = () => {
     setIndex((prevIndex) =>

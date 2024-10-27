@@ -40,6 +40,16 @@ export function TripSchedulesEditor({
     <>
       <button onClick={addSchedule}>便を追加する</button>
       <table>
+        <thead>
+          <tr>
+            {waypoints.map((waypoint, i) => (
+              <td>
+                {waypoint.name}
+                {i == 0 && "（接続駅）"}
+              </td>
+            ))}
+          </tr>
+        </thead>
         <tbody>
           {schedules.map((schedule) => (
             <TripScheduleRowEditor

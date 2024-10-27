@@ -1,5 +1,6 @@
 import React from "react";
 import { formatDateToHM, TripSchedule, Waypoint } from "../../model";
+import { generateDate } from "../../model/date";
 
 interface TripScheduleRowEditor {
   schedule: TripSchedule;
@@ -16,8 +17,13 @@ export function TripScheduleRowEditor({
 }: TripScheduleRowEditor) {
   const makeChangeHandler =
     (waypoint: Waypoint) => (e: React.FormEvent<HTMLInputElement>) => {
-      const date = e.currentTarget?.valueAsDate;
-      if (!date) return;
+      const hourAndMinute = e.currentTarget?.valueAsDate;
+      if (!hourAndMinute) return;
+
+      const date = generateDate(
+        hourAndMinute.getHours(),
+        hourAndMinute.getMinutes()
+      );
 
       const updatedSchedules: TripSchedule = {
         ...schedule,

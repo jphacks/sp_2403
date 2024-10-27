@@ -1,7 +1,10 @@
 import useTimeCandidates from "./hooks/useTimeCandidates";
-import { useEffect, useState } from "react";
-import { LocalDirection } from "./model";
+import React, { useEffect, useState } from "react";
+import { LocalDirection, Waypoint } from "./model";
 import LocalDirectionInput from "./components/LocalDirectionInput";
+import { requiredGlobalPlaceArrivalTimes } from "./model/requiredGlobalPlaceArrivalTimes";
+import { generateDate } from "./model/date";
+import TargetArrivalTimeChoice from "./components/TargetArrivalTimeChoice/TargetArrivalTimeChoice";
 
 // type Position = {
 //   latitude: number;
@@ -9,22 +12,10 @@ import LocalDirectionInput from "./components/LocalDirectionInput";
 // };
 
 const targetArrivalTimeCandidates = [
-  { name: "1限目", time: new Date(2024, 10, 26, 17, 0) },
-  { name: "2限目", time: new Date(2024, 10, 26, 19, 0) },
-  { name: "3限目", time: new Date(2024, 10, 26, 20, 0) },
+  { name: "1限目", time: generateDate(17, 0) },
+  { name: "2限目", time: generateDate(19, 0) },
+  { name: "3限目", time: generateDate(20, 0) },
 ];
-
-const timetable: Timetable = {
-  title: "My Timetable",
-  schedule: [
-    {
-      stop_time: new Date(2023, 9, 26, 8, 0),
-      waypoint: {
-        name: "シャトルバス千歳",
-      },
-    },
-  ],
-};
 
 function App() {
   const { selected, goToPrevious, goToNext } = useTimeCandidates(
@@ -48,6 +39,8 @@ function App() {
       .catch(console.error);
   }, [selected]);
 
+  const [destination, setDestination] = useState<Waypoint | null>(null);
+
   const [direction, setDirection] = useState<LocalDirection>({
     connection: {
       globalPlace: "",
@@ -58,15 +51,47 @@ function App() {
     waypoints: [],
   });
 
+  const arrivalTimes = destination
+    ? requiredGlobalPlaceArrivalTimes(
+        {
+          destination: destination,
+          targetArrivalTime: selected.time,
+        },
+        direction
+      )
+    : [];
+  console.log(arrivalTimes);
+
+  const onDestinationChange: React.FormEventHandler<HTMLSelectElement> = (
+    e
+  ) => {
+    const destination = direction.waypoints.find(
+      (waypoint) => waypoint.uuid == e.currentTarget.value
+    );
+    if (destination) setDestination(destination);
+  };
+
   return (
     <>
-      {/* <TargetArrivalTimeChoice
+      <TargetArrivalTimeChoice
         onPrevious={goToPrevious}
         onNext={goToNext}
         content={selected}
       />
-      {resp && resp.toString()} */}
+      {resp && resp.toString()}
       <LocalDirectionInput direction={direction} onChange={setDirection} />
+      <select onChange={onDestinationChange}>
+        {direction.waypoints.map((waypoint) => (
+          <option key={waypoint.uuid} value={waypoint.uuid}>
+            {waypoint.name}
+          </option>
+        ))}
+      </select>
+      <ul>
+        {arrivalTimes.map((time) => (
+          <li key={time.toString()}>{time.toString()}</li>
+        ))}
+      </ul>
     </>
   );
 }
