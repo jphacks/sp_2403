@@ -5,6 +5,10 @@ import LocalDirectionInput from "./components/LocalDirectionInput";
 import { requiredGlobalPlaceArrivalTimes } from "./model/requiredGlobalPlaceArrivalTimes";
 import { generateDate } from "./model/date";
 import TargetArrivalTimeChoice from "./components/TargetArrivalTimeChoice/TargetArrivalTimeChoice";
+import ButtonUsage from "./components/Button";
+import { AccessAlarm, ThreeDRotation } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 // type Position = {
 //   latitude: number;
@@ -92,7 +96,9 @@ function App() {
           <li key={time.toString()}>{time.toString()}</li>
         ))}
       </ul>
-    </>
+
+      </>
+      
   );
 }
 

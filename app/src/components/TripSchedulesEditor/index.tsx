@@ -45,7 +45,7 @@ export function TripSchedulesEditor({
             {waypoints.map((waypoint, i) => (
               <td>
                 {waypoint.name}
-                {i == 0 && "（接続駅）"}
+                {i == 0 && " -------> "}
               </td>
             ))}
           </tr>

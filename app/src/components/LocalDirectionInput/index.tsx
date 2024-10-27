@@ -36,15 +36,6 @@ const LocalDirectionInput = ({
 
   return (
     <div>
-      <label htmlFor="directionName">Name: </label>
-      <input
-        type="text"
-        id="directionName"
-        value={direction.name}
-        onChange={handleNameChange}
-        placeholder="Direction name"
-      />
-
       <TripSchedulesEditor
         waypoints={direction.waypoints}
         schedules={direction.schedules}

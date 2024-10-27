@@ -1,6 +1,9 @@
 import React from "react";
 import { formatDateToHM, TripSchedule, Waypoint } from "../../model";
 import { generateDate } from "../../model/date";
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+
 
 interface TripScheduleRowEditor {
   schedule: TripSchedule;
@@ -55,11 +58,10 @@ export function TripScheduleRowEditor({
     <tr>
       {waypoints.map(displayTiming)}
       <td>
-        <input
-          type="button"
-          onClick={() => onDelete(schedule)}
-          value="削除する"
-        />
+      <div>  
+          <IconButton
+          onClick={() => onDelete(schedule)}><DeleteIcon /></IconButton>
+        </div>
       </td>
     </tr>
   );

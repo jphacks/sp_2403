@@ -1,4 +1,6 @@
 import { Waypoint } from "../../model";
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 
 interface WaypointsEditorProps {
   waypoints: Waypoint[];
@@ -27,17 +29,29 @@ export function WaypointsEditor({ waypoints, onChange }: WaypointsEditorProps) {
 
   return (
     <div>
+
       <h3>Waypoints</h3>
       {waypoints.map((waypoint, index) => (
+        <tr>
+        <td>
         <div key={waypoint.uuid}>
+
+          
+    
           <input
             type="text"
             value={waypoint.name}
             onChange={(e) => handleNameChange(index, e.target.value)}
             placeholder="Waypoint name"
           />
-          <button onClick={() => handleRemoveWaypoint(index)}>Remove</button>
+
+          
+          <IconButton
+          onClick={() => handleRemoveWaypoint(index)}><DeleteIcon /></IconButton>
         </div>
+      </td>
+      </tr>
+        
       ))}
       <button onClick={handleAddWaypoint}>Add Waypoint</button>
     </div>
