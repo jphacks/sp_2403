@@ -7,11 +7,14 @@ class ManiaeAPI:
     def __init__(self):
         pass
 
-    # def send_request(self,start,goal,time):
-    def make_json_file(self, start, goal):
-        routes = self.get_route(start,goal)
+    def make_json_file(self, start, goal, time):
+        routes = self.get_route(start,goal, time)
         json_data = self.get_json_data(routes)
         self.output_file(json_data)
+
+    def json_route_data(self, start, goal, time):
+        routes = self.get_route(start, goal, time)
+        return self.get_json_data(routes)
 
     def get_json_data(self, routes):
         json_data = {}
@@ -22,14 +25,26 @@ class ManiaeAPI:
             json_data[route_name] = self.merge_data(stations, transports)
         return json_data
 
-    def get_route(self, start, goal):
-        # url = "https://transit.yahoo.co.jp/search/result?from={0}&to={1}&type=4&y={2}&m={3}&d={4}&hh={5}&m1={6}&m2={7}".format(start,goal)
-        url = "https://transit.yahoo.co.jp/search/result?from={0}&to={1}".format(start, goal)
+    def get_route(self, start, goal, time):
+        # url = "https://transit.yahoo.co.jp/search/result?from={0}&to={1}".format(start, goal)
+        url = self.make_url(start, goal, time)
         res = requests.get(url)
         print(f'status:{res.status_code}')
 
         soup = BeautifulSoup(res.text, 'html.parser')
         return soup.find_all(class_="routeDetail")
+
+    def make_url(self, start, goal, time):
+        calender = time.split('T')[0]
+        moments = time.split('T')[1]
+        year = calender.split('-')[0]
+        month = calender.split('-')[1]
+        day = calender.split('-')[2]
+        hour = moments.split(':')[0]
+        m1 = moments.split(':')[1][0]
+        m2 = moments.split(':')[1][1]
+        url = "https://transit.yahoo.co.jp/search/result?from={0}&to={1}&type=4&y={2}&m={3}&d={4}&hh={5}&m1={6}&m2={7}".format(start,goal,year,month,day,hour,m1,m2)
+        return url
 
     def get_stations(self, route):
         stations = []
