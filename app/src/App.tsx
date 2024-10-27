@@ -1,29 +1,12 @@
-import TargetArrivalTimeChoice from "./components/TargetArrivalTimeChoice/TargetArrivalTimeChoice";
 import useTimeCandidates from "./hooks/useTimeCandidates";
 import { useEffect, useState } from "react";
+import { LocalDirection } from "./model";
+import LocalDirectionInput from "./components/LocalDirectionInput";
 
 // type Position = {
 //   latitude: number;
 //   longitude: number;
 // };
-
-type Waypoint = {
-  name: string;
-};
-
-type WaypointTiming = {
-  waypoint: Waypoint;
-  // 停車時刻
-  stop_time: Date;
-};
-
-type Schedule = WaypointTiming[];
-
-type Timetable = {
-  title: string;
-  schedule: Schedule;
-  waypoints: Waypoint[];
-};
 
 const targetArrivalTimeCandidates = [
   { name: "1限目", time: new Date(2024, 10, 26, 17, 0) },
@@ -59,20 +42,31 @@ function App() {
     )
       .then((rawResp) => {
         if (rawResp.status == 200) {
-          rawResp.json().then(setResp);
+          // rawResp.json().then(setResp);
         }
       })
       .catch(console.error);
   }, [selected]);
 
+  const [direction, setDirection] = useState<LocalDirection>({
+    connection: {
+      globalPlace: "",
+      delayMinutes: 0,
+    },
+    name: "",
+    schedules: [],
+    waypoints: [],
+  });
+
   return (
     <>
-      <TargetArrivalTimeChoice
+      {/* <TargetArrivalTimeChoice
         onPrevious={goToPrevious}
         onNext={goToNext}
         content={selected}
       />
-      {resp && resp.toString()}
+      {resp && resp.toString()} */}
+      <LocalDirectionInput direction={direction} onChange={setDirection} />
     </>
   );
 }

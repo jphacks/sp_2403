@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TargetArrivalTimeCandidate } from "../components/TargetArrivalTimeChoice/TargetArrivalTimeChoice";
+import { TargetArrivalTimeCandidate } from "../model";
 
 function useTimeCandidates(targetArrivalTimes: TargetArrivalTimeCandidate[]) {
   const [index, setIndex] = useState(0);

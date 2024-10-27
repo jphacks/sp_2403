@@ -1,7 +1,4 @@
-export type TargetArrivalTimeCandidate = {
-  name: string;
-  time: Date;
-};
+import { formatDateToHM, TargetArrivalTimeCandidate } from "../../model";
 
 interface TargetArrivalTimeChoiceProps {
   content: TargetArrivalTimeCandidate;
@@ -19,10 +16,7 @@ export default function TargetArrivalTimeChoice({
       <button onClick={onPrevious}>&lt;</button>
       <div style={{ margin: "0 10px", textAlign: "center" }}>
         <p>{content.name}</p>
-        <p>
-          {content.time.getHours().toString().padStart(2, "0")}:
-          {content.time.getMinutes().toString().padStart(2, "0")}
-        </p>
+        <p>{formatDateToHM(content.time)}</p>
       </div>
       <button onClick={onNext}>&gt;</button>
     </div>
