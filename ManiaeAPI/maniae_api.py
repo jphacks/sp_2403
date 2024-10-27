@@ -9,14 +9,21 @@ class ManiaeAPI:
 
     def make_json_file(self, start, goal, time):
         routes = self.get_route(start,goal, time)
-        json_data = self.get_json_data(routes)
+        json_data = self.make_json_data(routes)
         self.output_file(json_data)
 
-    def json_route_data(self, start, goal, time):
+    def route_json(self, start, goal, time):
         routes = self.get_route(start, goal, time)
-        return self.get_json_data(routes)
+        return self.make_json_data(routes)
 
-    def get_json_data(self, routes):
+    def get_route(self, start, goal, time):
+        url = self.make_url(start, goal, time)
+        res = requests.get(url)
+        print(f'status:{res.status_code}')
+        soup = BeautifulSoup(res.text, 'html.parser')
+        return soup.find_all(class_="routeDetail")
+
+    def make_json_data(self, routes):
         json_data = {}
         for route_index,route in enumerate(routes):
             stations = self.get_stations(route)
@@ -25,18 +32,10 @@ class ManiaeAPI:
             json_data[route_name] = self.merge_data(stations, transports)
         return json_data
 
-    def get_route(self, start, goal, time):
-        # url = "https://transit.yahoo.co.jp/search/result?from={0}&to={1}".format(start, goal)
-        url = self.make_url(start, goal, time)
-        res = requests.get(url)
-        print(f'status:{res.status_code}')
-
-        soup = BeautifulSoup(res.text, 'html.parser')
-        return soup.find_all(class_="routeDetail")
-
     def make_url(self, start, goal, time):
-        calender = time.split('T')[0]
-        moments = time.split('T')[1]
+        standard_time = self.goo_lab(time)
+        calender = standard_time.split('T')[0]
+        moments = standard_time.split('T')[1]
         year = calender.split('-')[0]
         month = calender.split('-')[1]
         day = calender.split('-')[2]
@@ -46,12 +45,21 @@ class ManiaeAPI:
         url = "https://transit.yahoo.co.jp/search/result?from={0}&to={1}&type=4&y={2}&m={3}&d={4}&hh={5}&m1={6}&m2={7}".format(start,goal,year,month,day,hour,m1,m2)
         return url
 
+    def goo_lab(self, time):
+        url = "https://labs.goo.ne.jp/api/chrono"
+        post_data = json.dumps({
+                "app_id":"cd748588f4c06d762a680b74c68e4abacca3844308f4a2faaea514cb1988d18a",
+                "sentence":time
+        })
+        res = requests.post(url,post_data,headers={"Content-Type": "application/json"})
+        goo_lab_data = json.loads(res.text)
+        print("time:{0}".format(goo_lab_data['datetime_list'][-1][1]))
+        return goo_lab_data['datetime_list'][-1][1]
+
     def get_stations(self, route):
         stations = []
         for station in route.find_all(class_="station"):
-            data = {}
-            data['kind'] = "station"
-            data['station'] = station.find("a").text
+            data = {'kind': "station", 'station': station.find("a").text}
             if len(stations) == 0:
                 data['departure'] = station.find(class_="time").text
             elif len(stations) == len(route.find_all(class_="station")) - 1:
@@ -65,9 +73,7 @@ class ManiaeAPI:
     def get_transports(self, route):
         transports = []
         for tp in route.find_all(class_="transport"):
-            data = {}
-            data['kind'] = "transport"
-            data['transport'] = tp.text
+            data = {'kind': "transport", 'transport': tp.text}
             transports.append(data)
         return transports
 
