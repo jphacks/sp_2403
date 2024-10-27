@@ -8,6 +8,7 @@ import {
   TripSchedule,
   Waypoint,
 } from "../../model";
+import { Stack } from "@mui/material";
 
 interface LocalDirectionInputProps {
   direction: LocalDirection;
@@ -35,14 +36,10 @@ const LocalDirectionInput = ({
   };
 
   return (
-    <div>
-      <label htmlFor="directionName">Name: </label>
-      <input
-        type="text"
-        id="directionName"
-        value={direction.name}
-        onChange={handleNameChange}
-        placeholder="Direction name"
+    <Stack spacing={5}>
+      <WaypointsEditor
+        waypoints={direction.waypoints}
+        onChange={handleWaypointsChange}
       />
 
       <TripSchedulesEditor
@@ -51,16 +48,11 @@ const LocalDirectionInput = ({
         onChange={handleSchedulesChange}
       />
 
-      <WaypointsEditor
-        waypoints={direction.waypoints}
-        onChange={handleWaypointsChange}
-      />
-
       <LocalGlobalConnectionInput
         connection={direction.connection}
         onChange={handleConnectionChange}
       />
-    </div>
+    </Stack>
   );
 };
 

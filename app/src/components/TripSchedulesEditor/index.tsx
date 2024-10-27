@@ -1,3 +1,4 @@
+import { Button, Card, CardContent, Stack, Typography } from "@mui/material";
 import { TripSchedule, Waypoint } from "../../model";
 import { updatedArray } from "../../utils/updatedArray";
 import { TripScheduleRowEditor } from "../TripScheduleRowEditor";
@@ -37,31 +38,36 @@ export function TripSchedulesEditor({
   };
 
   return (
-    <>
-      <button onClick={addSchedule}>便を追加する</button>
-      <table>
-        <thead>
-          <tr>
-            {waypoints.map((waypoint, i) => (
-              <td>
-                {waypoint.name}
-                {i == 0 && "（接続駅）"}
-              </td>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {schedules.map((schedule) => (
-            <TripScheduleRowEditor
-              key={schedule.uuid}
-              schedule={schedule}
-              waypoints={waypoints}
-              onChange={onScheduleChange}
-              onDelete={onScheduleDelete}
-            />
-          ))}
-        </tbody>
-      </table>
-    </>
+    <Card>
+      <CardContent>
+        <Stack spacing={3}>
+          <Typography variant="h5">時刻表</Typography>
+          <Button onClick={addSchedule}>便を追加する</Button>
+          <table>
+            <thead>
+              <tr>
+                {waypoints.map((waypoint, i) => (
+                  <td key={waypoint.uuid}>
+                    {waypoint.name}
+                    {i == 0 && "（接続駅）"}
+                  </td>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {schedules.map((schedule) => (
+                <TripScheduleRowEditor
+                  key={schedule.uuid}
+                  schedule={schedule}
+                  waypoints={waypoints}
+                  onChange={onScheduleChange}
+                  onDelete={onScheduleDelete}
+                />
+              ))}
+            </tbody>
+          </table>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }

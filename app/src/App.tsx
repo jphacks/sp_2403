@@ -1,10 +1,21 @@
 import useTimeCandidates from "./hooks/useTimeCandidates";
 import React, { useEffect, useState } from "react";
-import { LocalDirection, Waypoint } from "./model";
+import { formatDateToHM, LocalDirection, Waypoint } from "./model";
 import LocalDirectionInput from "./components/LocalDirectionInput";
 import { requiredGlobalPlaceArrivalTimes } from "./model/requiredGlobalPlaceArrivalTimes";
 import { generateDate } from "./model/date";
 import TargetArrivalTimeChoice from "./components/TargetArrivalTimeChoice/TargetArrivalTimeChoice";
+import {
+  AppBar,
+  Box,
+  Card,
+  CardContent,
+  Select,
+  Stack,
+  TextField,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 
 // type Position = {
 //   latitude: number;
@@ -22,25 +33,7 @@ function App() {
     targetArrivalTimeCandidates
   );
 
-  /**
-   * API Request And Save to state.
-   */
-  const [resp, setResp] = useState(null);
-  useEffect(() => {
-    fetch(
-      `http://localhost:5174/api?time=${selected.time}&name=${selected.name}`,
-      { method: "GET", mode: "no-cors" }
-    )
-      .then((rawResp) => {
-        if (rawResp.status == 200) {
-          // rawResp.json().then(setResp);
-        }
-      })
-      .catch(console.error);
-  }, [selected]);
-
   const [destination, setDestination] = useState<Waypoint | null>(null);
-
   const [direction, setDirection] = useState<LocalDirection>({
     connection: {
       globalPlace: "",
@@ -71,28 +64,77 @@ function App() {
     if (destination) setDestination(destination);
   };
 
+  const [depaturePlace, setDepaturePlace] = useState("");
+
+  const [requiredDepatureTimes, setRequiredDepatureTimes] = useState<string>(
+    []
+  );
+
+  useEffect(() => {
+    if (destination && direction.waypoints.length && depaturePlace)
+      Promise.all(
+        arrivalTimes.map(async (arrivalTime) => {
+          const resp = await fetch(
+            `http://localhost:8000/get_route?start=${depaturePlace}&time=${formatDateToHM(
+              arrivalTime
+            )}&goal=${direction.waypoints[0].name}`,
+            { method: "GET", mode: "cors" }
+          );
+          const json = await resp.json();
+          console.log(json);
+          const depatureTimes = json.routes.map((route) => route[0]);
+          return depatureTimes;
+        })
+      ).then((depatureTimes) => {
+        console.log(depatureTimes);
+        setRequiredDepatureTimes(depatureTimes);
+      });
+  }, [destination, depaturePlace, arrivalTimes, direction]);
+
   return (
-    <>
-      <TargetArrivalTimeChoice
-        onPrevious={goToPrevious}
-        onNext={goToNext}
-        content={selected}
-      />
-      {resp && resp.toString()}
+    <Stack spacing={6}>
+      {/* @ts-expect-error 型定義をしていないため */}
       <LocalDirectionInput direction={direction} onChange={setDirection} />
-      <select onChange={onDestinationChange}>
-        {direction.waypoints.map((waypoint) => (
-          <option key={waypoint.uuid} value={waypoint.uuid}>
-            {waypoint.name}
-          </option>
-        ))}
-      </select>
+
+      <Card variant="outlined">
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            検索条件
+          </Typography>
+          <Stack spacing={3}>
+            <TargetArrivalTimeChoice
+              onPrevious={goToPrevious}
+              onNext={goToNext}
+              content={selected}
+            />
+            {direction.waypoints.length ? (
+              <select onChange={onDestinationChange}>
+                {direction.waypoints.map((waypoint) => (
+                  <option key={waypoint.uuid} value={waypoint.uuid}>
+                    {waypoint.name}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+            <TextField
+              onBlur={(e) => setDepaturePlace(e.currentTarget.value)}
+              placeholder="現在地の最寄り駅を入力"
+            />
+          </Stack>
+        </CardContent>
+      </Card>
+
       <ul>
         {arrivalTimes.map((time) => (
           <li key={time.toString()}>{time.toString()}</li>
         ))}
       </ul>
-    </>
+      <ul>
+        {requiredDepatureTimes.map((time) => (
+          <li key={time}>{time}</li>
+        ))}
+      </ul>
+    </Stack>
   );
 }
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { GlobalRoute } from "../../model";
+import { Input, Typography } from "@mui/material";
 
 interface GlobalRouteInputProps {
   route: GlobalRoute;
@@ -13,8 +14,10 @@ export function GlobalRouteInput({ route, onChange }: GlobalRouteInputProps) {
 
   return (
     <div>
-      <label htmlFor="departureStation">出発地: </label>
-      <input
+      <label htmlFor="departureStation">
+        <Typography>出発地</Typography>
+      </label>
+      <Input
         type="text"
         id="departureStation"
         value={route.depaturePlaceName}

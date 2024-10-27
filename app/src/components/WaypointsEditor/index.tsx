@@ -1,3 +1,11 @@
+import {
+  Button,
+  Card,
+  CardContent,
+  Input,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Waypoint } from "../../model";
 
 interface WaypointsEditorProps {
@@ -26,20 +34,33 @@ export function WaypointsEditor({ waypoints, onChange }: WaypointsEditorProps) {
   };
 
   return (
-    <div>
-      <h3>Waypoints</h3>
-      {waypoints.map((waypoint, index) => (
-        <div key={waypoint.uuid}>
-          <input
-            type="text"
-            value={waypoint.name}
-            onChange={(e) => handleNameChange(index, e.target.value)}
-            placeholder="Waypoint name"
-          />
-          <button onClick={() => handleRemoveWaypoint(index)}>Remove</button>
-        </div>
-      ))}
-      <button onClick={handleAddWaypoint}>Add Waypoint</button>
-    </div>
+    <Card>
+      <CardContent>
+        <Typography variant="h5" gutterBottom>
+          バス停留所
+        </Typography>
+        {!waypoints.length ? (
+          <Typography variant="body1" gutterBottom>
+            まだ停留所が登録されていません。
+          </Typography>
+        ) : null}
+        <Stack spacing={1}>
+          {waypoints.map((waypoint, index) => (
+            <div key={waypoint.uuid}>
+              <Input
+                type="text"
+                value={waypoint.name}
+                onChange={(e) => handleNameChange(index, e.target.value)}
+                placeholder="停留所名"
+              />
+              <Button onClick={() => handleRemoveWaypoint(index)}>×</Button>
+            </div>
+          ))}
+        </Stack>
+        <Button onClick={handleAddWaypoint} variant="outlined">
+          追加する
+        </Button>
+      </CardContent>
+    </Card>
   );
 }

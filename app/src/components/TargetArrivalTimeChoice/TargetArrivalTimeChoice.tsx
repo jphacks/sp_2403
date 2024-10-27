@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import { formatDateToHM, TargetArrivalTimeCandidate } from "../../model";
 
 interface TargetArrivalTimeChoiceProps {
@@ -13,12 +14,16 @@ export default function TargetArrivalTimeChoice({
 }: TargetArrivalTimeChoiceProps) {
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
-      <button onClick={onPrevious}>&lt;</button>
+      <Button onClick={onPrevious} variant="contained">
+        &lt;
+      </Button>
       <div style={{ margin: "0 10px", textAlign: "center" }}>
         <p>{content.name}</p>
         <p>{formatDateToHM(content.time)}</p>
       </div>
-      <button onClick={onNext}>&gt;</button>
+      <Button onClick={onNext} variant="contained">
+        &gt;
+      </Button>
     </div>
   );
 }

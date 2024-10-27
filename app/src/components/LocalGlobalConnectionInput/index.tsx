@@ -1,3 +1,4 @@
+import { TextField } from "@mui/material";
 import { LocalGlobalConnection } from "../../model";
 
 interface LocalGlobalConnectionInputProps {
@@ -18,25 +19,12 @@ export function LocalGlobalConnectionInput({
   };
 
   return (
-    <div>
-      <label>
-        Global Place:
-        <input
-          type="text"
-          value={connection.globalPlace}
-          onChange={handleGlobalPlaceChange}
-          placeholder="Enter global place"
-        />
-      </label>
-      <label>
-        Delay Minutes:
-        <input
-          type="number"
-          value={connection.delayMinutes}
-          onChange={handleDelayMinutesChange}
-          placeholder="Enter delay in minutes"
-        />
-      </label>
-    </div>
+    <TextField
+      label=" 最寄り駅から接続バス停まで"
+      type="number"
+      value={connection.delayMinutes}
+      onChange={handleDelayMinutesChange}
+      placeholder="15"
+    />
   );
 }
