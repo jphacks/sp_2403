@@ -10,10 +10,6 @@ export function LocalGlobalConnectionInput({
   connection,
   onChange,
 }: LocalGlobalConnectionInputProps) {
-  const handleGlobalPlaceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange({ ...connection, globalPlace: e.target.value });
-  };
-
   const handleDelayMinutesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...connection, delayMinutes: Number(e.target.value) });
   };

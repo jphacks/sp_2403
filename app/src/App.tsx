@@ -1,39 +1,52 @@
-import useTimeCandidates from "./hooks/useTimeCandidates";
-import React, { useEffect, useState } from "react";
-import { formatDateToHM, LocalDirection, Waypoint } from "./model";
+import { useState } from "react";
+import { LocalDirection } from "./model";
 import LocalDirectionInput from "./components/LocalDirectionInput";
-import { requiredGlobalPlaceArrivalTimes } from "./model/requiredGlobalPlaceArrivalTimes";
-import { generateDate } from "./model/date";
-import TargetArrivalTimeChoice from "./components/TargetArrivalTimeChoice/TargetArrivalTimeChoice";
 import {
-  AppBar,
   Box,
   Card,
   CardContent,
-  Select,
+  Divider,
+  Fab,
+  Modal,
+  Paper,
   Stack,
-  TextField,
-  Toolbar,
   Typography,
 } from "@mui/material";
+import { TransitSearch } from "./components/TransitSearch";
+import { transitIsSearchable } from "./model/transitIsSearchable";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { generateWaypoint } from "./model/waypoint";
 
 // type Position = {
 //   latitude: number;
 //   longitude: number;
 // };
 
-const targetArrivalTimeCandidates = [
-  { name: "1限目", time: generateDate(17, 0) },
-  { name: "2限目", time: generateDate(19, 0) },
-  { name: "3限目", time: generateDate(20, 0) },
-];
-
 function App() {
-  const { selected, goToPrevious, goToNext } = useTimeCandidates(
-    targetArrivalTimeCandidates
-  );
+  // const [requiredDepatureTimes, setRequiredDepatureTimes] = useState<string>();
 
-  const [destination, setDestination] = useState<Waypoint | null>(null);
+  // useEffect(() => {
+  //   if (destination && direction.waypoints.length && depaturePlace)
+  //     Promise.all(
+  //       arrivalTimes.map(async (arrivalTime) => {
+  //         const resp = await fetch(
+  //           `http://localhost:8000/get_route?start=${depaturePlace}&time=${formatDateToHM(
+  //             arrivalTime
+  //           )}&goal=${direction.waypoints[0].name}`,
+  //           { method: "GET", mode: "cors" }
+  //         );
+  //         const json = await resp.json();
+  //         console.log(json);
+  //         const depatureTimes = json.routes.map((route) => route[0]);
+  //         return depatureTimes;
+  //       })
+  //     ).then((depatureTimes) => {
+  //       console.log(depatureTimes);
+  //       setRequiredDepatureTimes(depatureTimes);
+  //     });
+  // }, [destination, depaturePlace, arrivalTimes, direction]);
+
+  const [open, setOpen] = useState(false);
   const [direction, setDirection] = useState<LocalDirection>({
     connection: {
       globalPlace: "",
@@ -41,100 +54,70 @@ function App() {
     },
     name: "",
     schedules: [],
-    waypoints: [],
+    waypoints: [generateWaypoint("停留所1"), generateWaypoint("停留所2")],
   });
 
-  const arrivalTimes = destination
-    ? requiredGlobalPlaceArrivalTimes(
-        {
-          destination: destination,
-          targetArrivalTime: selected.time,
-        },
-        direction
-      )
-    : [];
-  console.log(arrivalTimes);
-
-  const onDestinationChange: React.FormEventHandler<HTMLSelectElement> = (
-    e
-  ) => {
-    const destination = direction.waypoints.find(
-      (waypoint) => waypoint.uuid == e.currentTarget.value
-    );
-    if (destination) setDestination(destination);
+  const handleLocalDirectionCommit = (inputtedDirection: LocalDirection) => {
+    setOpen(false);
+    setDirection(inputtedDirection);
   };
 
-  const [depaturePlace, setDepaturePlace] = useState("");
-
-  const [requiredDepatureTimes, setRequiredDepatureTimes] = useState<string>(
-    []
-  );
-
-  useEffect(() => {
-    if (destination && direction.waypoints.length && depaturePlace)
-      Promise.all(
-        arrivalTimes.map(async (arrivalTime) => {
-          const resp = await fetch(
-            `http://localhost:8000/get_route?start=${depaturePlace}&time=${formatDateToHM(
-              arrivalTime
-            )}&goal=${direction.waypoints[0].name}`,
-            { method: "GET", mode: "cors" }
-          );
-          const json = await resp.json();
-          console.log(json);
-          const depatureTimes = json.routes.map((route) => route[0]);
-          return depatureTimes;
-        })
-      ).then((depatureTimes) => {
-        console.log(depatureTimes);
-        setRequiredDepatureTimes(depatureTimes);
-      });
-  }, [destination, depaturePlace, arrivalTimes, direction]);
+  const requiredDepatureTimes = ["11:10", "20:20"];
 
   return (
-    <Stack spacing={6}>
-      {/* @ts-expect-error 型定義をしていないため */}
-      <LocalDirectionInput direction={direction} onChange={setDirection} />
+    <>
+      <Box
+        sx={{
+          position: "fixed",
+          margin: "0 1rem 1rem 0",
+          right: "0",
+          bottom: "0",
+        }}
+      >
+        <Fab color="primary" size="large" onClick={() => setOpen(true)}>
+          <CalendarMonthIcon />
+        </Fab>
+      </Box>
+      <Modal onClose={() => {}} open={open}>
+        <Paper
+          elevation={3}
+          sx={{
+            width: "90%",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            padding: "1rem",
+          }}
+        >
+          <LocalDirectionInput
+            initialValue={direction}
+            onCommit={handleLocalDirectionCommit}
+          />
+        </Paper>
+      </Modal>
 
-      <Card variant="outlined">
-        <CardContent>
-          <Typography variant="h5" gutterBottom>
-            検索条件
-          </Typography>
-          <Stack spacing={3}>
-            <TargetArrivalTimeChoice
-              onPrevious={goToPrevious}
-              onNext={goToNext}
-              content={selected}
-            />
-            {direction.waypoints.length ? (
-              <select onChange={onDestinationChange}>
-                {direction.waypoints.map((waypoint) => (
-                  <option key={waypoint.uuid} value={waypoint.uuid}>
-                    {waypoint.name}
-                  </option>
-                ))}
-              </select>
-            ) : null}
-            <TextField
-              onBlur={(e) => setDepaturePlace(e.currentTarget.value)}
-              placeholder="現在地の最寄り駅を入力"
-            />
+      <Box sx={{ padding: "1rem" }}>
+        <Stack spacing={2}>
+          {transitIsSearchable(direction) ? (
+            <TransitSearch direction={direction} />
+          ) : null}
+          <Divider />
+
+          <Stack spacing={1}>
+            {requiredDepatureTimes.map((time) => (
+              <Card key={time}>
+                <CardContent>
+                  <Stack alignItems="center">
+                    <Typography variant="h5">{time}</Typography>
+                  </Stack>
+                </CardContent>
+              </Card>
+            ))}
           </Stack>
-        </CardContent>
-      </Card>
-
-      <ul>
-        {arrivalTimes.map((time) => (
-          <li key={time.toString()}>{time.toString()}</li>
-        ))}
-      </ul>
-      <ul>
-        {requiredDepatureTimes.map((time) => (
-          <li key={time}>{time}</li>
-        ))}
-      </ul>
-    </Stack>
+        </Stack>
+      </Box>
+    </>
   );
 }
 

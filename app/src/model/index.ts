@@ -38,7 +38,7 @@ export type TransitRequirement = {
 };
 
 export function formatDateToHM(date: Date) {
-  return `${date.getHours().toString().padStart(2, "0")}:${date
+  return `${date.getUTCHours().toString().padStart(2, "0")}:${date
     .getMinutes()
     .toString()
     .padStart(2, "0")}`;

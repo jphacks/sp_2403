@@ -1,5 +1,8 @@
-import { Button } from "@mui/material";
+import { IconButton, Stack, Typography } from "@mui/material";
 import { formatDateToHM, TargetArrivalTimeCandidate } from "../../model";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface TargetArrivalTimeChoiceProps {
   content: TargetArrivalTimeCandidate;
@@ -13,17 +16,25 @@ export default function TargetArrivalTimeChoice({
   onNext,
 }: TargetArrivalTimeChoiceProps) {
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
-      <Button onClick={onPrevious} variant="contained">
-        &lt;
-      </Button>
-      <div style={{ margin: "0 10px", textAlign: "center" }}>
-        <p>{content.name}</p>
-        <p>{formatDateToHM(content.time)}</p>
-      </div>
-      <Button onClick={onNext} variant="contained">
-        &gt;
-      </Button>
-    </div>
+    <Stack
+      direction="row"
+      alignItems="center"
+      spacing={1}
+      justifyContent="space-around"
+    >
+      <IconButton onClick={onPrevious}>
+        <ArrowBackIosIcon />
+      </IconButton>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Typography variant="body1">{content.name}</Typography>
+        <Typography variant="body1">{formatDateToHM(content.time)}</Typography>
+        <IconButton size="small">
+          <EditIcon />
+        </IconButton>
+      </Stack>
+      <IconButton onClick={onNext}>
+        <ArrowForwardIosIcon />
+      </IconButton>
+    </Stack>
   );
 }

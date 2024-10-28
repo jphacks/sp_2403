@@ -1,12 +1,13 @@
 import {
   Button,
-  Card,
-  CardContent,
-  Input,
+  IconButton,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Waypoint } from "../../model";
+import { generateWaypoint } from "../../model/waypoint";
 
 interface WaypointsEditorProps {
   waypoints: Waypoint[];
@@ -23,20 +24,20 @@ export function WaypointsEditor({ waypoints, onChange }: WaypointsEditorProps) {
 
   // Waypointの追加
   const handleAddWaypoint = () => {
-    const newWaypoint: Waypoint = { name: "", uuid: crypto.randomUUID() };
+    const newWaypoint: Waypoint = generateWaypoint("");
     onChange([...waypoints, newWaypoint]);
   };
 
   // Waypointの削除
-  const handleRemoveWaypoint = (index: number) => {
+  const handleRemoveWaypoint = (index: number) => () => {
     const updatedWaypoints = waypoints.filter((_, i) => i !== index);
     onChange(updatedWaypoints);
   };
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
+    <section>
+      <Stack spacing={2}>
+        <Typography variant="h6" gutterBottom>
           バス停留所
         </Typography>
         {!waypoints.length ? (
@@ -44,23 +45,28 @@ export function WaypointsEditor({ waypoints, onChange }: WaypointsEditorProps) {
             まだ停留所が登録されていません。
           </Typography>
         ) : null}
-        <Stack spacing={1}>
-          {waypoints.map((waypoint, index) => (
-            <div key={waypoint.uuid}>
-              <Input
-                type="text"
-                value={waypoint.name}
-                onChange={(e) => handleNameChange(index, e.target.value)}
-                placeholder="停留所名"
-              />
-              <Button onClick={() => handleRemoveWaypoint(index)}>×</Button>
-            </div>
-          ))}
+        <Stack spacing={1} alignItems="flex-start">
+          <Stack spacing={1}>
+            {waypoints.map((waypoint, index) => (
+              <div key={waypoint.uuid}>
+                <TextField
+                  type="text"
+                  value={waypoint.name}
+                  onChange={(e) => handleNameChange(index, e.target.value)}
+                  placeholder="停留所名"
+                  size="small"
+                />
+                <IconButton onClick={handleRemoveWaypoint(index)}>
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            ))}
+          </Stack>
+          <Button onClick={handleAddWaypoint} variant="outlined">
+            追加する
+          </Button>
         </Stack>
-        <Button onClick={handleAddWaypoint} variant="outlined">
-          追加する
-        </Button>
-      </CardContent>
-    </Card>
+      </Stack>
+    </section>
   );
 }

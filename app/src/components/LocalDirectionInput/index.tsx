@@ -1,4 +1,3 @@
-import React from "react";
 import { TripSchedulesEditor } from "../TripSchedulesEditor";
 import { WaypointsEditor } from "../WaypointsEditor";
 import { LocalGlobalConnectionInput } from "../LocalGlobalConnectionInput";
@@ -8,31 +7,30 @@ import {
   TripSchedule,
   Waypoint,
 } from "../../model";
-import { Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
+import { useState } from "react";
 
 interface LocalDirectionInputProps {
-  direction: LocalDirection;
-  onChange: (direction: LocalDirection) => void;
+  initialValue: LocalDirection;
+  onCommit: (direction: LocalDirection) => void;
 }
 
 const LocalDirectionInput = ({
-  direction,
-  onChange,
+  onCommit,
+  initialValue,
 }: LocalDirectionInputProps) => {
-  const handleNameChange: React.FormEventHandler<HTMLInputElement> = (e) => {
-    onChange({ ...direction, name: e.currentTarget.value });
-  };
+  const [direction, setDirection] = useState<LocalDirection>(initialValue);
 
   const handleSchedulesChange = (updatedSchedules: TripSchedule[]) => {
-    onChange({ ...direction, schedules: updatedSchedules });
+    setDirection({ ...direction, schedules: updatedSchedules });
   };
 
   const handleWaypointsChange = (updatedWaypoints: Waypoint[]) => {
-    onChange({ ...direction, waypoints: updatedWaypoints });
+    setDirection({ ...direction, waypoints: updatedWaypoints });
   };
 
   const handleConnectionChange = (updatedConnection: LocalGlobalConnection) => {
-    onChange({ ...direction, connection: updatedConnection });
+    setDirection({ ...direction, connection: updatedConnection });
   };
 
   return (
@@ -42,16 +40,22 @@ const LocalDirectionInput = ({
         onChange={handleWaypointsChange}
       />
 
-      <TripSchedulesEditor
-        waypoints={direction.waypoints}
-        schedules={direction.schedules}
-        onChange={handleSchedulesChange}
-      />
+      {direction.waypoints.length ? (
+        <TripSchedulesEditor
+          waypoints={direction.waypoints}
+          schedules={direction.schedules}
+          onChange={handleSchedulesChange}
+        />
+      ) : null}
 
       <LocalGlobalConnectionInput
         connection={direction.connection}
         onChange={handleConnectionChange}
       />
+
+      <Button variant="contained" onClick={() => onCommit(direction)}>
+        保存する
+      </Button>
     </Stack>
   );
 };

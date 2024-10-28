@@ -1,7 +1,8 @@
 import React from "react";
 import { formatDateToHM, TripSchedule, Waypoint } from "../../model";
 import { generateDate } from "../../model/date";
-import { Button } from "@mui/material";
+import { Button, TableCell, TableRow } from "@mui/material";
+import styles from "./index.module.css";
 
 interface TripScheduleRowEditor {
   schedule: TripSchedule;
@@ -41,25 +42,30 @@ export function TripScheduleRowEditor({
     const timing = schedule.timing[waypoint.uuid];
 
     return (
-      <td key={waypoint.uuid}>
+      <TableCell key={waypoint.uuid}>
         <input
           type="time"
           value={timing ? formatDateToHM(timing) : ""}
           onChange={makeChangeHandler(waypoint)}
           required
+          className={styles.time}
         />
-      </td>
+      </TableCell>
     );
   };
 
   return (
-    <tr>
+    <TableRow>
       {waypoints.map(displayTiming)}
-      <td>
-        <Button variant="outlined" onClick={() => onDelete(schedule)}>
+      <TableCell>
+        <Button
+          variant="outlined"
+          onClick={() => onDelete(schedule)}
+          size="small"
+        >
           削除する
         </Button>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 }
