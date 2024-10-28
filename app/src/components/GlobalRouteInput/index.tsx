@@ -1,6 +1,6 @@
-import React from "react";
+import { ChangeEventHandler } from "react";
 import { GlobalRoute } from "../../model";
-import { Input, Typography } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 
 interface GlobalRouteInputProps {
   route: GlobalRoute;
@@ -8,8 +8,8 @@ interface GlobalRouteInputProps {
 }
 
 export function GlobalRouteInput({ route, onChange }: GlobalRouteInputProps) {
-  const handleChange: React.FormEventHandler<HTMLInputElement> = (e) => {
-    onChange({ ...route, depaturePlaceName: e.currentTarget.value });
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    onChange({ ...route, depaturePlaceName: e.target.value });
   };
 
   return (
@@ -17,7 +17,7 @@ export function GlobalRouteInput({ route, onChange }: GlobalRouteInputProps) {
       <label htmlFor="departureStation">
         <Typography>出発地</Typography>
       </label>
-      <Input
+      <TextField
         type="text"
         id="departureStation"
         value={route.depaturePlaceName}
